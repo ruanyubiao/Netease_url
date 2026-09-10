@@ -490,7 +490,9 @@
                     return '<span class="dl-status-chip dl-status-ok">离线下载完成：' + escapeHtml(task.filename || task.name || '') + '</span>';
                 }
                 if (task.status === 'error') {
-                    return '<span class="dl-status-chip dl-status-err">下载错误：' + escapeHtml(task.message || '') + '</span>';
+                    const msg = task.message || '下载失败';
+                    const text = msg.indexOf('下载失败') === 0 ? msg : ('下载失败：' + msg);
+                    return '<span class="dl-status-chip dl-status-err">' + escapeHtml(text) + '</span>';
                 }
                 if (task.status === 'cancelled') {
                     return '<span class="dl-status-chip dl-status-muted">已取消</span>';
@@ -518,8 +520,17 @@
                 const single = total <= 1;
 
                 if (job.status === 'completed') {
-                    const text = single ? '下载完成' : ('下载完成  ' + done + '/' + total);
-                    return '<span class="dl-status-chip dl-status-ok">' + text + '</span>';
+                    const failed = p.failed || (job.tasks || []).filter(function(t) { return t.status === 'error'; }).length;
+                    let text;
+                    if (single) {
+                        text = failed ? '下载失败' : '下载完成';
+                    } else if (failed) {
+                        text = '下载完成  ' + done + '/' + total + '，失败 ' + failed;
+                    } else {
+                        text = '下载完成  ' + done + '/' + total;
+                    }
+                    const chip = (failed && !done) ? 'dl-status-err' : 'dl-status-ok';
+                    return '<span class="dl-status-chip ' + chip + '">' + text + '</span>';
                 }
                 if (job.status === 'failed') {
                     const err = (job.tasks || []).find(t => t.status === 'error');
@@ -541,7 +552,8 @@
                     return formatBytesProgressHtml(p.downloaded_bytes, p.total_bytes);
                 }
                 const curName = p.current_name || '';
-                const idx = done + (p.current_id ? 1 : 0);
+                const processed = (p.processed != null) ? p.processed : done;
+                const idx = processed + (p.current_id ? 1 : 0);
                 // 批量：歌名 + 序号，同时尽量带上当前曲字节进度
                 if (p.total_bytes > 0) {
                     return formatBytesProgressHtml(
@@ -592,7 +604,7 @@
                         data: JSON.stringify({
                             ids: ids,
                             quality: quality || 'jymaster',
-                            stop_on_error: true
+                            stop_on_error: false
                         }),
                         dataType: 'json'
                     }).done(function(data) {

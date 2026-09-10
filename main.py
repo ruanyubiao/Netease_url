@@ -616,7 +616,7 @@ def create_download_job():
     try:
         data = api_service._safe_get_request_data()
         quality = data.get('quality', 'jymaster')
-        stop_on_error = data.get('stop_on_error', True)
+        stop_on_error = data.get('stop_on_error', False)
         if isinstance(stop_on_error, str):
             stop_on_error = stop_on_error.lower() not in ('0', 'false', 'no')
 

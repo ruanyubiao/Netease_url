@@ -34,13 +34,15 @@ class DownloadJob:
     tasks: List[SongTaskState] = field(default_factory=list)
     status: str = "queued"  # queued / running / completed / failed / cancelled
     message: str = ""
-    stop_on_error: bool = True
+    stop_on_error: bool = False
     cancel_requested: bool = False
     created_at: float = field(default_factory=time.time)
     finished_at: Optional[float] = None
 
     def to_dict(self) -> Dict[str, Any]:
         done = sum(1 for t in self.tasks if t.status == "done")
+        failed = sum(1 for t in self.tasks if t.status == "error")
+        processed = sum(1 for t in self.tasks if t.status in ("done", "error", "skipped"))
         total = len(self.tasks)
         current = next((t for t in self.tasks if t.status == "downloading"), None)
         return {
@@ -53,6 +55,8 @@ class DownloadJob:
             "finished_at": self.finished_at,
             "progress": {
                 "done": done,
+                "failed": failed,
+                "processed": processed,
                 "total": total,
                 "current_id": current.music_id if current else None,
                 "current_name": current.name if current else "",
@@ -75,7 +79,7 @@ class DownloadJobManager:
         self,
         music_ids: List[int],
         quality: str = "jymaster",
-        stop_on_error: bool = True,
+        stop_on_error: bool = False,
     ) -> DownloadJob:
         if not music_ids:
             raise ValueError("music_ids 不能为空")
@@ -177,25 +181,28 @@ class DownloadJobManager:
                 task.message = f"离线下载完成：{task.filename or task.name}"
             except Exception as e:
                 task.status = "error"
-                task.message = str(e)
-                job.message = f"下载错误：{task.name or task.music_id}"
+                err = str(e) or "下载失败"
+                task.message = err if err.startswith("下载失败") else f"下载失败：{err}"
                 if job.stop_on_error:
                     for rest in job.tasks:
                         if rest.status == "pending":
                             rest.status = "cancelled"
                             rest.message = "因错误停止"
                     job.status = "failed"
+                    job.message = task.message
                     job.finished_at = time.time()
                     return
 
         if job.cancel_requested:
             job.status = "cancelled"
             job.message = "已取消"
-        elif any(t.status == "error" for t in job.tasks):
-            job.status = "failed"
-            job.message = "部分失败"
         else:
-            job.status = "completed"
+            done = sum(1 for t in job.tasks if t.status == "done")
+            failed = sum(1 for t in job.tasks if t.status == "error")
             total = len(job.tasks)
-            job.message = f"下载完成  {total}/{total}"
+            job.status = "completed"
+            if failed:
+                job.message = f"下载完成  {done}/{total}，失败 {failed}"
+            else:
+                job.message = f"下载完成  {total}/{total}"
         job.finished_at = time.time()
