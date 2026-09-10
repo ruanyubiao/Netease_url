@@ -1,0 +1,280 @@
+{
+  "single_artist": {
+    "id": 480579393,
+    "name": "桃花诺",
+    "ar": [
+      {
+        "id": 7763,
+        "name": "G.E.M.邓紫棋",
+        "tns": [],
+        "alias": []
+      }
+    ],
+    "al": {
+      "id": 35689357,
+      "name": "上古情歌 电视剧原声带",
+      "picUrl": "https://p4.music.126.net/_v7ezNPQOEJ3aFir8MZmzQ==/19050138463061697.jpg",
+      "tns": [],
+      "pic_str": "19050138463061697",
+      "pic": 19050138463061697
+    },
+    "pc": null
+  },
+  "two_artists": {
+    "id": 4875127,
+    "name": "美丽的神话",
+    "ar": [
+      {
+        "id": 2118,
+        "name": "成龙",
+        "tns": [],
+        "alias": []
+      },
+      {
+        "id": 203245,
+        "name": "金喜善",
+        "tns": [],
+        "alias": []
+      }
+    ],
+    "al": {
+      "id": 489913,
+      "name": "神话 电影原声带",
+      "picUrl": "https://p4.music.126.net/Kk3pdyIaCSLy1cCUWK7fSw==/19064432114028522.jpg",
+      "tns": [],
+      "pic_str": "19064432114028522",
+      "pic": 19064432114028522
+    },
+    "pc": null
+  },
+  "three_artists": {
+    "id": 27759600,
+    "name": "Five Hundred Miles",
+    "ar": [
+      {
+        "id": 35331,
+        "name": "Justin Timberlake",
+        "tns": [],
+        "alias": []
+      },
+      {
+        "id": 27947531,
+        "name": "Carey Mulligan",
+        "tns": [],
+        "alias": []
+      },
+      {
+        "id": 27947532,
+        "name": "Stark Sands",
+        "tns": [],
+        "alias": []
+      }
+    ],
+    "al": {
+      "id": 2672349,
+      "name": "Inside Llewyn Davis: Original Soundtrack Recording",
+      "picUrl": "https://p4.music.126.net/4BTe96FPQ_kW1pmNnlNvHg==/2536573326765583.jpg",
+      "tns": [
+        "醉乡民谣"
+      ],
+      "pic": 2536573326765583
+    },
+    "pc": null
+  },
+  "two_artists_english": {
+    "id": 31010566,
+    "name": "Sold Out",
+    "ar": [
+      {
+        "id": 35526,
+        "name": "Jonathan Steingard",
+        "tns": [],
+        "alias": []
+      },
+      {
+        "id": 34518,
+        "name": "Hawk Nelson",
+        "tns": [],
+        "alias": []
+      }
+    ],
+    "al": {
+      "id": 3109316,
+      "name": "Diamonds",
+      "picUrl": "https://p4.music.126.net/K8hM5Y5U2CNUY8o7-_IOUQ==/109951168234104467.jpg",
+      "tns": [],
+      "pic_str": "109951168234104467",
+      "pic": 109951168234104467
+    },
+    "pc": null
+  },
+  "cloud_empty_ar_al": {
+    "id": 29902273,
+    "name": "夜曲",
+    "ar": [
+      {
+        "id": 0,
+        "name": "",
+        "tns": [],
+        "alias": [
+          "Jay Chou",
+          "周董"
+        ]
+      }
+    ],
+    "al": {
+      "id": 0,
+      "name": "",
+      "picUrl": "https://p3.music.126.net/C6Vro2l0BH59Wka9gOaC6w==/109951171180358170.jpg",
+      "tns": [],
+      "pic": 0
+    },
+    "pc": {
+      "privateCloud": {
+        "id": 435683057934,
+        "userId": 40253003,
+        "songId": 29902273,
+        "md5": "34304b958a7eb2250f55540d0201da4a",
+        "song": "夜曲",
+        "artist": "周杰伦",
+        "album": "11月的萧邦（10周年珍藏版）",
+        "bitrate": 942,
+        "fileName": "01. 夜曲.flac",
+        "songDfsId": 0,
+        "cover": 0,
+        "lyric": 0,
+        "cue": 0,
+        "convertLyric": 0,
+        "version": 2,
+        "addTime": 1665552532839,
+        "fileSize": 26914402,
+        "status": 0,
+        "originalAudioSongId": 29902273,
+        "lrcType": ""
+      },
+      "nickname": "",
+      "br": 942,
+      "ar": "周杰伦",
+      "alb": "11月的萧邦（10周年珍藏版）",
+      "uid": 40253003,
+      "sn": "夜曲",
+      "version": 2,
+      "fn": "01. 夜曲.flac",
+      "cid": "",
+      "cover": null
+    }
+  },
+  "null_artist_name": {
+    "id": 1432910438,
+    "name": "朴树 - 平凡之路",
+    "ar": [
+      {
+        "id": 0,
+        "name": null,
+        "tns": [],
+        "alias": []
+      }
+    ],
+    "al": {
+      "id": 0,
+      "name": null,
+      "picUrl": "https://p3.music.126.net/C6Vro2l0BH59Wka9gOaC6w==/109951171180358170.jpg",
+      "tns": [],
+      "pic": 0
+    },
+    "pc": {
+      "privateCloud": {
+        "id": 436046803158,
+        "userId": 40253003,
+        "songId": 1432910438,
+        "md5": "0e8dd926e742dee5c252cd1ddf465f11",
+        "song": "朴树 - 平凡之路",
+        "artist": "",
+        "album": "",
+        "bitrate": 842,
+        "fileName": "朴树 - 平凡之路.ape",
+        "songDfsId": 0,
+        "cover": 0,
+        "lyric": 0,
+        "cue": 0,
+        "convertLyric": 0,
+        "version": 1,
+        "addTime": 1678771904887,
+        "fileSize": 31744886,
+        "status": 0,
+        "originalAudioSongId": 1432910438,
+        "lrcType": ""
+      },
+      "nickname": "",
+      "br": 842,
+      "ar": "",
+      "alb": "",
+      "uid": 40253003,
+      "sn": "朴树 - 平凡之路",
+      "version": 1,
+      "fn": "朴树 - 平凡之路.ape",
+      "cid": "",
+      "cover": null
+    }
+  },
+  "duet_chinese": {
+    "id": 452601484,
+    "name": "凉凉",
+    "ar": [
+      {
+        "id": 6066,
+        "name": "杨宗纬",
+        "tns": [],
+        "alias": []
+      },
+      {
+        "id": 1024308,
+        "name": "张碧晨",
+        "tns": [],
+        "alias": []
+      }
+    ],
+    "al": {
+      "id": 35194088,
+      "name": "三生三世十里桃花 电视剧原声带",
+      "picUrl": "https://p4.music.126.net/mmyJBXc7xakVOmKSHeM8wg==/109951165336492651.jpg",
+      "tns": [],
+      "pic_str": "109951165336492651",
+      "pic": 109951165336492651
+    },
+    "pc": {
+      "privateCloud": {
+        "id": 436088059666,
+        "userId": 40253003,
+        "songId": 452601484,
+        "md5": "43e5dcfd6072cbaaf4509ec8b4f0db4a",
+        "song": "凉凉",
+        "artist": "杨宗纬",
+        "album": "三生三世十里桃花 电视剧原声带",
+        "bitrate": 843,
+        "fileName": "杨宗纬 _ 张碧晨 - 凉凉.flac",
+        "songDfsId": 0,
+        "cover": 0,
+        "lyric": 0,
+        "cue": 0,
+        "convertLyric": 0,
+        "version": 2,
+        "addTime": 1788418944768,
+        "fileSize": 35098683,
+        "status": 0,
+        "originalAudioSongId": 462736566,
+        "lrcType": ""
+      },
+      "nickname": "",
+      "br": 843,
+      "ar": "杨宗纬",
+      "alb": "三生三世十里桃花 电视剧原声带",
+      "uid": 40253003,
+      "sn": "凉凉",
+      "version": 2,
+      "fn": "杨宗纬 _ 张碧晨 - 凉凉.flac",
+      "cid": "",
+      "cover": null
+    }
+  }
+}

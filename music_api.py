@@ -149,6 +149,90 @@ class APIException(Exception):
     pass
 
 
+def format_artists(song_or_artists) -> str:
+    """将歌曲歌手列表合并为以 '/' 分隔的字符串。
+
+    支持传入整首 song（含 ``ar`` 字段）或直接传入 ``ar`` 列表。
+    合唱等多歌手场景会按顺序拼接；``name`` 为 None / 空字符串时跳过。
+
+    云盘曲目常出现 ``ar[].name`` 为空，此时回退 ``pc.ar`` /
+    ``pc.privateCloud.artist``；仍没有时尝试从 ``歌名`` / ``pc.sn``
+    解析 ``歌手 - 歌名`` 格式。
+
+    Args:
+        song_or_artists: 歌曲字典，或歌手列表（如 ``song['ar']``）
+
+    Returns:
+        合并后的歌手名，无有效名字时返回空字符串
+    """
+    song = song_or_artists if isinstance(song_or_artists, dict) else None
+    if song is not None:
+        artists = song.get('ar') or []
+    else:
+        artists = song_or_artists or []
+
+    names = []
+    for artist in artists:
+        if isinstance(artist, dict):
+            name = artist.get('name')
+        else:
+            name = artist
+        if name:
+            names.append(str(name))
+    if names:
+        return '/'.join(names)
+
+    if song is None:
+        return ''
+
+    pc = song.get('pc') or {}
+    for candidate in (pc.get('ar'), (pc.get('privateCloud') or {}).get('artist')):
+        if candidate:
+            return str(candidate).strip()
+
+    for raw in (song.get('name'), pc.get('sn')):
+        parsed = _artist_from_cloud_title(raw)
+        if parsed:
+            return parsed
+    return ''
+
+
+def format_album(song: Optional[Dict[str, Any]]) -> str:
+    """提取专辑名；云盘曲目回退 ``pc.alb`` / ``pc.privateCloud.album``。
+
+    ``al.name`` 为 None / 空时不返回 None，避免前端显示 ``[null]``。
+    """
+    if not isinstance(song, dict):
+        return ''
+
+    al = song.get('al') or {}
+    if isinstance(al, dict):
+        name = al.get('name')
+        if name:
+            return str(name)
+
+    pc = song.get('pc') or {}
+    for candidate in (pc.get('alb'), (pc.get('privateCloud') or {}).get('album')):
+        if candidate:
+            return str(candidate).strip()
+    return ''
+
+
+def _artist_from_cloud_title(title: Optional[str]) -> str:
+    """从云盘文件名/标题解析歌手，如 ``朴树 - 平凡之路``、``古筝-千本樱``。"""
+    if not title or not isinstance(title, str):
+        return ''
+    text = title.strip()
+    for sep in (' - ', ' – ', '-'):
+        if sep not in text:
+            continue
+        left, right = text.split(sep, 1)
+        left, right = left.strip(), right.strip()
+        if left and right:
+            return left
+    return ''
+
+
 class NeteaseAPI:
     """网易云音乐API主类"""
     
@@ -301,8 +385,8 @@ class NeteaseAPI:
                 song_info = {
                     'id': item['id'],
                     'name': item['name'],
-                    'artists': '/'.join(artist['name'] for artist in item['ar']),
-                    'album': item['al']['name'],
+                    'artists': format_artists(item),
+                    'album': format_album(item),
                     'picUrl': item['al']['picUrl']
                 }
                 songs.append(song_info)
@@ -367,9 +451,9 @@ class NeteaseAPI:
                     info['tracks'].append({
                         'id': song['id'],
                         'name': song['name'],
-                        'artists': '/'.join(artist['name'] for artist in song['ar']),
-                        'album': song['al']['name'],
-                        'picUrl': song['al']['picUrl']
+                        'artists': format_artists(song),
+                        'album': format_album(song),
+                        'picUrl': (song.get('al') or {}).get('picUrl') or ''
                     })
             
             return info
@@ -420,9 +504,9 @@ class NeteaseAPI:
                 info['songs'].append({
                     'id': song['id'],
                     'name': song['name'],
-                    'artists': '/'.join(artist['name'] for artist in song['ar']),
-                    'album': song['al']['name'],
-                    'picUrl': self.get_pic_url(song['al'].get('pic'))
+                    'artists': format_artists(song),
+                    'album': format_album(song),
+                    'picUrl': self.get_pic_url((song.get('al') or {}).get('pic'))
                 })
             
             return info

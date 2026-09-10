@@ -25,7 +25,7 @@ from mutagen.mp3 import MP3
 from mutagen.id3 import ID3, TIT2, TPE1, TALB, TDRC, TRCK, APIC
 from mutagen.mp4 import MP4
 
-from music_api import NeteaseAPI, APIException
+from music_api import NeteaseAPI, APIException, format_artists, format_album
 from cookie_manager import CookieManager
 
 
@@ -107,7 +107,20 @@ class MusicDownloader:
             'flac': AudioFormat.FLAC,
             'm4a': AudioFormat.M4A
         }
-    
+
+    def _local_stem(self, artists: str, name: str) -> str:
+        """生成本地文件名主干：歌手 - 歌名（不含扩展名）"""
+        return self._sanitize_filename(f"{artists} - {name}")
+
+    def find_existing_local_file(self, artists: str, name: str) -> Optional[Path]:
+        """按约定文件名在 downloads 中查找已存在文件（核对磁盘，不依赖索引）。"""
+        stem = self._local_stem(artists, name)
+        for ext in ('.flac', '.mp3', '.m4a'):
+            path = self.download_dir / f"{stem}{ext}"
+            if path.is_file() and path.stat().st_size > 0:
+                return path
+        return None
+
     def _sanitize_filename(self, filename: str) -> str:
         """清理文件名，移除非法字符
         
@@ -198,16 +211,13 @@ class MusicDownloader:
             lyric = lyric_result.get('lrc', {}).get('lyric', '') if lyric_result else ''
             tlyric = lyric_result.get('tlyric', {}).get('lyric', '') if lyric_result else ''
             
-            # 构建艺术家字符串
-            artists = '/'.join(artist['name'] for artist in song_detail.get('ar', []))
-            
             # 创建MusicInfo对象
             music_info = MusicInfo(
                 id=music_id,
                 name=song_detail.get('name', '未知歌曲'),
-                artists=artists or '未知艺术家',
-                album=song_detail.get('al', {}).get('name', '未知专辑'),
-                pic_url=song_detail.get('al', {}).get('picUrl', ''),
+                artists=format_artists(song_detail) or '未知艺术家',
+                album=format_album(song_detail) or '未知专辑',
+                pic_url=(song_detail.get('al') or {}).get('picUrl', ''),
                 duration=song_detail.get('dt', 0) // 1000,  # 转换为秒
                 track_number=song_detail.get('no', 0),
                 download_url=download_url,
@@ -225,54 +235,72 @@ class MusicDownloader:
         except Exception as e:
             raise DownloadException(f"获取音乐信息时发生错误: {e}")
     
-    def download_music_file(self, music_id: int, quality: str = "standard") -> DownloadResult:
+    def download_music_file(
+        self,
+        music_id: int,
+        quality: str = "standard",
+        progress_callback=None,
+    ) -> DownloadResult:
         """下载音乐文件到本地
         
         Args:
             music_id: 音乐ID
             quality: 音质等级
+            progress_callback: 可选回调 ``(downloaded_bytes, total_bytes, music_info)``
             
         Returns:
             下载结果对象
         """
         try:
-            # 获取音乐信息
+            # 获取音乐信息（用于拼文件名；本地已有则不再拉音频）
             music_info = self.get_music_info(music_id, quality)
-            
-            # 生成文件名
-            filename = f"{music_info.artists} - {music_info.name}"
-            safe_filename = self._sanitize_filename(filename)
-            
-            # 确定文件扩展名
-            file_ext = self._determine_file_extension(music_info.download_url)
-            file_path = self.download_dir / f"{safe_filename}{file_ext}"
-            
-            # 检查文件是否已存在
-            if file_path.exists():
+
+            existing = self.find_existing_local_file(music_info.artists, music_info.name)
+            if existing is not None:
+                size = existing.stat().st_size
+                if progress_callback:
+                    progress_callback(size, size, music_info)
                 return DownloadResult(
                     success=True,
-                    file_path=str(file_path),
-                    file_size=file_path.stat().st_size,
+                    file_path=str(existing),
+                    file_size=size,
                     music_info=music_info
                 )
-            
+
+            file_ext = self._determine_file_extension(music_info.download_url)
+            file_path = self.download_dir / f"{self._local_stem(music_info.artists, music_info.name)}{file_ext}"
+
             # 下载文件
             response = requests.get(music_info.download_url, stream=True, timeout=30)
             response.raise_for_status()
-            
-            # 写入文件
+
+            total = int(response.headers.get('Content-Length') or 0)
+            if total <= 0 and getattr(music_info, 'file_size', 0):
+                total = int(music_info.file_size or 0)
+            downloaded = 0
+            if progress_callback:
+                progress_callback(0, total, music_info)
+
             with open(file_path, 'wb') as f:
-                for chunk in response.iter_content(chunk_size=8192):
-                    if chunk:
-                        f.write(chunk)
-            
+                for chunk in response.iter_content(chunk_size=64 * 1024):
+                    if not chunk:
+                        continue
+                    f.write(chunk)
+                    downloaded += len(chunk)
+                    if progress_callback:
+                        progress_callback(downloaded, total, music_info)
+
             # 写入音乐标签
             self._write_music_tags(file_path, music_info)
-            
+
+            final_size = file_path.stat().st_size
+            if progress_callback:
+                progress_callback(final_size, final_size or total, music_info)
+
             return DownloadResult(
                 success=True,
                 file_path=str(file_path),
-                file_size=file_path.stat().st_size,
+                file_size=final_size,
                 music_info=music_info
             )
             

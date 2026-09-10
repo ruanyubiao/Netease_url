@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,65 +12,32 @@
             color: #333;
         }
         .container {
-            max-width: 800px;
+            max-width: 960px;
         }
-        .form-group {
-            margin-bottom: 15px;
+        .download-actions {
+            margin-top: 12px;
+            gap: 0.5rem;
         }
-        .btn-primary {
-            margin-top: 20px;
-            background-color: #007bff;
-            border-color: #007bff;
-        }
-        .btn-primary:hover {
-            background-color: #0056b3;
-            border-color: #004085;
-        }
-        .btn-success {
-            margin-top: 20px;
-            background-color: #28a745;
-            border-color: #28a745;
-        }
-        .btn-success:hover {
-            background-color: #218838;
-            border-color: #1e7e34;
-        }
-        .btn-warning {
-            margin-top: 20px;
-            background-color: #ffc107;
-            border-color: #ffc107;
-        }
-        .btn-warning:hover {
-            background-color: #e0a800;
-            border-color: #d39e00;
+        .download-actions .btn {
+            margin-top: 0;
+            min-width: 110px;
         }
         #song-info {
             margin-top: 20px;
-        }
-        #song-info img {
-            max-width: 100%;
-            border-radius: 8px;
         }
         .alert-info {
             background-color: #d1ecf1;
             color: #0c5460;
             border-color: #bee5eb;
         }
-        /* 歌曲/歌单标题过长自动省略号 */
         .song-title, .playlist-title {
             display: inline-block;
-            max-width: 180px;
+            max-width: 420px;
             vertical-align: middle;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        /* 歌单列表按钮不换行 */
-        .list-group-item .select-song {
-            flex-shrink: 0;
-            margin-left: 10px;
-        }
-        /* 歌词区域美化 */
         .lyric-box {
             max-height: 180px;
             overflow-y: auto;
@@ -83,191 +50,290 @@
             line-height: 1.7;
             margin-bottom: 0;
         }
+        .nav-tabs .nav-link {
+            color: #555;
+        }
+        .nav-tabs .nav-link.active {
+            font-weight: 600;
+        }
+        .song-item-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            min-width: 0;
+        }
+        .song-item-meta-main {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+            flex: 1;
+        }
+        .song-item-id {
+            flex-shrink: 0;
+            color: #6c757d;
+            font-size: 12px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        }
+        .song-item-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .song-item-status {
+            flex: 1;
+            min-width: 0;
+            color: #6c757d;
+            font-size: 12px;
+        }
+        .status-line {
+            display: inline-flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            line-height: 1.4;
+        }
+        .dl-progress {
+            display: inline-flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            color: #334155;
+            font-size: 12px;
+        }
+        .dl-progress-label {
+            color: #64748b;
+        }
+        .dl-progress-pct {
+            font-weight: 700;
+            color: #0d6efd;
+            min-width: 2.5em;
+        }
+        .dl-progress-bar {
+            width: 88px;
+            height: 6px;
+            border-radius: 999px;
+            background: #dbe4f0;
+            overflow: hidden;
+        }
+        .dl-progress-bar > span {
+            display: block;
+            height: 100%;
+            background: linear-gradient(90deg, #4dabf7, #228be6);
+            border-radius: 999px;
+        }
+        .dl-progress-size {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            color: #475569;
+        }
+        .dl-progress-size em {
+            font-style: normal;
+            color: #94a3b8;
+            margin-left: 2px;
+        }
+        .dl-status-ok { color: #198754; }
+        .dl-status-err { color: #dc3545; }
+        .dl-status-muted { color: #6c757d; }
+        .dl-status-chip {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: #eef2f7;
+            font-size: 12px;
+        }
+        .song-item-btns {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            justify-content: flex-end;
+            flex-shrink: 0;
+        }
+        .tab-pane-body {
+            padding-top: 1rem;
+        }
     </style>
 </head>
 <body>
-    <div class="container mt-5">
+    <div class="container mt-4 mb-5">
         <h1 class="text-center mb-4">网易云音乐工具箱</h1>
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <form id="main-form">
-                    <div class="mb-3">
-                        <label class="form-label">功能选择</label>
-                        <select id="mode-select" class="form-select">
-                            <option value="search">歌曲搜索</option>
-                            <option value="parse">单曲解析</option>
-                            <option value="playlist">歌单解析</option>
-                            <option value="album">专辑解析</option>
-                            <option value="download">音乐下载</option>
-                        </select>
-                    </div>
-                    <div id="search-area">
-                        <div class="mb-3">
-                            <label for="search_keywords" class="form-label">搜索关键词</label>
-                            <input type="text" id="search_keywords" class="form-control" placeholder="输入关键词进行搜索">
-                        </div>
-                        <div class="mb-3">
-                            <label for="search_limit" class="form-label">返回数量</label>
-                            <input type="number" id="search_limit" class="form-control" value="10" min="1" max="50">
-                        </div>
-                        <div class="text-center">
-                            <button type="button" id="search-btn" class="btn btn-success w-50">搜索</button>
-                        </div>
-                    </div>
-                    <div id="parse-area" style="display:none;">
-                        <div class="mb-3">
-                            <label for="song_ids" class="form-label">歌曲ID或URL</label>
-                            <input type="text" id="song_ids" class="form-control" placeholder="输入歌曲ID或URL">
-                        </div>
-                        <div class="mb-3">
-                            <label for="level" class="form-label">音质选择</label>
-                            <select id="level" class="form-select">
-                                <option value="standard">标准音质</option>
-                                <option value="exhigh">极高音质</option>
-                                <option value="lossless">无损音质</option>
-                                <option value="hires">Hires音质</option>
-                                <option value="sky">沉浸环绕声</option>
-                                <option value="jyeffect">高清环绕声</option>
-                                <option value="jymaster">超清母带</option>
-                            </select>
-                        </div>
-                        <div class="text-center">
-                            <button type="button" id="parse-btn" class="btn btn-primary w-50">解析</button>
-                        </div>
-                    </div>
-                    <div id="playlist-area" style="display:none;">
-                        <div class="mb-3">
-                            <label for="playlist_id" class="form-label">歌单ID或链接</label>
-                            <input type="text" id="playlist_id" class="form-control" placeholder="输入歌单ID或网易云歌单链接">
-                        </div>
-                        <div class="text-center">
-                            <button type="button" id="playlist-btn" class="btn btn-warning w-50">解析歌单</button>
-                        </div>
-                    </div>
-                    <div id="album-area" style="display:none;">
-                        <div class="mb-3">
-                            <label for="album_id" class="form-label">专辑ID或链接</label>
-                            <input type="text" id="album_id" class="form-control" placeholder="输入专辑ID或网易云专辑链接">
-                        </div>
-                        <div class="text-center">
-                            <button type="button" id="album-btn" class="btn btn-info w-50">解析专辑</button>
-                        </div>
-                    </div>
-                    <div id="download-area" style="display:none;">
-                        <div class="mb-3">
-                            <label for="download_id" class="form-label">音乐ID或URL</label>
-                            <input type="text" id="download_id" class="form-control" placeholder="输入音乐ID或网易云音乐链接">
-                        </div>
-                        <div class="mb-3">
-                            <label for="download_quality" class="form-label">下载音质</label>
-                            <select id="download_quality" class="form-select">
-                                <option value="standard">标准音质</option>
-                                <option value="exhigh">极高音质</option>
-                                <option value="lossless" selected>无损音质</option>
-                                <option value="hires">Hires音质</option>
-                                <option value="sky">沉浸环绕声</option>
-                                <option value="jyeffect">高清环绕声</option>
-                                <option value="jymaster">超清母带</option>
-                                <option value="dolby">杜比全景声</option>
-                            </select>
-                        </div>
-                        <div class="text-center">
-                            <button type="button" id="download-btn" class="btn btn-success w-50">下载音乐</button>
-                        </div>
-                        <div id="download-progress" class="mt-3 d-none">
-                            <div class="progress">
-                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%"></div>
+
+        <ul class="nav nav-tabs" id="main-tabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="tab-search-btn" data-bs-toggle="tab" data-bs-target="#tab-search" type="button" role="tab">歌曲搜索</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="tab-playlist-btn" data-bs-toggle="tab" data-bs-target="#tab-playlist" type="button" role="tab">歌单解析</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="tab-album-btn" data-bs-toggle="tab" data-bs-target="#tab-album" type="button" role="tab">专辑解析</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="tab-download-btn" data-bs-toggle="tab" data-bs-target="#tab-download" type="button" role="tab">音乐下载</button>
+            </li>
+        </ul>
+
+        <div class="tab-content card border-top-0 rounded-0 rounded-bottom shadow-sm">
+            <div class="tab-pane fade show active tab-pane-body p-3" id="tab-search" role="tabpanel">
+                <div class="mb-3">
+                    <label for="search_keywords" class="form-label">搜索关键词</label>
+                    <input type="text" id="search_keywords" class="form-control" placeholder="输入关键词进行搜索">
+                </div>
+                <div class="mb-3">
+                    <label for="search_limit" class="form-label">返回数量</label>
+                    <input type="number" id="search_limit" class="form-control" value="10" min="1" max="50">
+                </div>
+                <div class="text-center">
+                    <button type="button" id="search-btn" class="btn btn-success px-5">搜索</button>
+                </div>
+                <div class="mt-2 text-center"><small class="text-muted" id="search-status"></small></div>
+                <div id="search-result" class="mt-3 d-none">
+                    <h5>搜索结果：</h5>
+                    <ul class="list-group" id="search-list"></ul>
+                </div>
+            </div>
+
+            <div class="tab-pane fade tab-pane-body p-3" id="tab-playlist" role="tabpanel">
+                <div class="mb-3">
+                    <label for="playlist_id" class="form-label">歌单ID或链接</label>
+                    <input type="text" id="playlist_id" class="form-control" placeholder="输入歌单ID或网易云歌单链接">
+                </div>
+                <div class="text-center d-flex flex-wrap justify-content-center download-actions">
+                    <button type="button" id="playlist-btn" class="btn btn-warning">解析歌单</button>
+                    <button type="button" id="playlist-offline-btn" class="btn btn-success" disabled>离线下载所有歌曲</button>
+                </div>
+                <div class="text-center mt-2"><small class="text-muted" id="playlist-status"></small></div>
+                <div id="playlist-result" class="mt-3 d-none">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <img id="playlist-cover" src="" alt="cover" style="width:60px;height:60px;object-fit:cover;border-radius:8px;margin-right:15px;">
+                                <div>
+                                    <h5 id="playlist-name" class="mb-1"></h5>
+                                    <div class="text-muted" id="playlist-creator"></div>
+                                </div>
                             </div>
-                            <div class="text-center mt-2">
-                                <small class="text-muted">正在下载并写入元信息...</small>
+                            <div id="playlist-desc" class="mb-2 text-secondary small"></div>
+                            <div>共 <span id="playlist-count"></span> 首歌</div>
+                            <div class="mt-2 d-flex justify-content-between align-items-center gap-2">
+                                <small class="text-muted" id="playlist-result-status"></small>
+                                <button type="button" id="playlist-cancel-btn" class="btn btn-sm btn-outline-danger d-none">停止下载</button>
                             </div>
                         </div>
                     </div>
-                </form>
-            </div>
-        </div>
-        <!-- 搜索结果列表 -->
-        <div id="search-result" class="mt-4 d-none">
-            <h5>搜索结果：</h5>
-            <ul class="list-group" id="search-list"></ul>
-        </div>
-        <!-- 结果展示区域 -->
-        <div id="song-info" class="alert alert-info d-none mt-4 p-0 border-0" style="box-shadow:0 2px 8px rgba(0,0,0,0.07);">
-            <div class="row g-0 align-items-stretch">
-                <div class="col-md-8 p-3 d-flex flex-column justify-content-between">
-                    <h4 class="mb-2" id="song_name" style="font-weight:700;"></h4>
-                    <div class="mb-2"><span class="badge bg-primary me-2">歌手</span><span id="artist_names"></span></div>
-                    <div class="mb-2"><span class="badge bg-secondary me-2">专辑</span><span id="song_alname"></span></div>
-                    <div class="mb-2"><span class="badge bg-success me-2">音质</span><span id="song_level"></span></div>
-                    <div class="mb-2"><span class="badge bg-warning text-dark me-2">大小</span><span id="song_size"></span></div>
-                    <div class="mb-2">
-                        <button id="show-big-pic" type="button" class="btn btn-outline-info btn-sm me-2" style="vertical-align:middle;">显示大图</button>
-                    </div>
-                    <div class="mb-2"><span class="badge bg-info text-dark me-2">链接</span><a id="song_url" href="" target="_blank">点击下载</a></div>
-                    <div class="mb-2"><span class="badge bg-dark me-2">歌词</span></div>
-                    <div class="lyric-box" id="lyric"></div>
+                    <ul class="list-group mt-3" id="playlist-tracks"></ul>
                 </div>
             </div>
-            <div class="row g-0">
-                <div class="col-12 p-3 pt-0">
-                    <div id="aplayer"></div>
+
+            <div class="tab-pane fade tab-pane-body p-3" id="tab-album" role="tabpanel">
+                <div class="mb-3">
+                    <label for="album_id" class="form-label">专辑ID或链接</label>
+                    <input type="text" id="album_id" class="form-control" placeholder="输入专辑ID或网易云专辑链接">
                 </div>
-            </div>
-        </div>
-        <!-- 歌单解析结果 -->
-        <div id="playlist-result" class="mt-4 d-none">
-            <div class="card">
-                <div class="card-body">
-                    <div class="d-flex align-items-center mb-3">
-                        <img id="playlist-cover" src="" alt="cover" style="width:60px;height:60px;object-fit:cover;border-radius:8px;margin-right:15px;">
-                        <div>
-                            <h5 id="playlist-name" class="mb-1"></h5>
-                            <div class="text-muted" id="playlist-creator"></div>
+                <div class="text-center d-flex flex-wrap justify-content-center download-actions">
+                    <button type="button" id="album-btn" class="btn btn-info">解析专辑</button>
+                    <button type="button" id="album-offline-btn" class="btn btn-success" disabled>离线下载所有歌曲</button>
+                </div>
+                <div class="text-center mt-2"><small class="text-muted" id="album-status"></small></div>
+                <div id="album-result" class="mt-3 d-none">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <img id="album-cover" src="" alt="cover" style="width:60px;height:60px;object-fit:cover;border-radius:8px;margin-right:15px;">
+                                <div>
+                                    <h5 id="album-name" class="mb-1"></h5>
+                                    <div class="text-muted" id="album-artist"></div>
+                                </div>
+                            </div>
+                            <div id="album-desc" class="mb-2 text-secondary small"></div>
+                            <div>共 <span id="album-count"></span> 首歌</div>
+                            <div class="mt-2 d-flex justify-content-between align-items-center gap-2">
+                                <small class="text-muted" id="album-result-status"></small>
+                                <button type="button" id="album-cancel-btn" class="btn btn-sm btn-outline-danger d-none">停止下载</button>
+                            </div>
                         </div>
                     </div>
-                    <div id="playlist-desc" class="mb-2 text-secondary small"></div>
-                    <div>共 <span id="playlist-count"></span> 首歌</div>
+                    <ul class="list-group mt-3" id="album-tracks"></ul>
                 </div>
             </div>
-            <ul class="list-group mt-3" id="playlist-tracks"></ul>
-        </div>
-        <!-- 专辑解析结果 -->
-        <div id="album-result" class="mt-4 d-none">
-            <div class="card">
-                <div class="card-body">
-                    <div class="d-flex align-items-center mb-3">
-                        <img id="album-cover" src="" alt="cover" style="width:60px;height:60px;object-fit:cover;border-radius:8px;margin-right:15px;">
-                        <div>
-                            <h5 id="album-name" class="mb-1"></h5>
-                            <div class="text-muted" id="album-artist"></div>
+
+            <div class="tab-pane fade tab-pane-body p-3" id="tab-download" role="tabpanel">
+                <div class="mb-3">
+                    <label for="download_id" class="form-label">音乐ID或URL</label>
+                    <input type="text" id="download_id" class="form-control" placeholder="输入音乐ID或网易云音乐链接">
+                </div>
+                <div class="mb-3">
+                    <label for="download_quality" class="form-label">下载音质</label>
+                    <select id="download_quality" class="form-select">
+                        <option value="standard">标准音质</option>
+                        <option value="exhigh">极高音质</option>
+                        <option value="lossless">无损音质</option>
+                        <option value="hires">Hires音质</option>
+                        <option value="sky">沉浸环绕声</option>
+                        <option value="jyeffect">高清环绕声</option>
+                        <option value="jymaster" selected>超清母带</option>
+                        <option value="dolby">杜比全景声</option>
+                    </select>
+                </div>
+                <div class="text-center d-flex flex-wrap justify-content-center download-actions">
+                    <button type="button" id="parse-btn" class="btn btn-primary">解析</button>
+                    <button type="button" id="download-btn" class="btn btn-success">下载</button>
+                    <button type="button" id="offline-download-btn" class="btn btn-warning">离线下载</button>
+                </div>
+                <div class="text-center mt-2"><small class="text-muted" id="download-status"></small></div>
+
+                <div id="song-info" class="alert alert-info d-none mt-4 p-0 border-0" style="box-shadow:0 2px 8px rgba(0,0,0,0.07);">
+                    <div class="row g-0 align-items-stretch">
+                        <div class="col-12 p-3">
+                            <h4 class="mb-2" id="song_name" style="font-weight:700;"></h4>
+                            <div class="mb-2"><span class="badge bg-primary me-2">歌手</span><span id="artist_names"></span></div>
+                            <div class="mb-2"><span class="badge bg-secondary me-2">专辑</span><span id="song_alname"></span></div>
+                            <div class="mb-2"><span class="badge bg-success me-2">音质</span><span id="song_level"></span></div>
+                            <div class="mb-2"><span class="badge bg-warning text-dark me-2">大小</span><span id="song_size"></span></div>
+                            <div class="mb-2">
+                                <button id="show-big-pic" type="button" class="btn btn-outline-info btn-sm me-2">显示大图</button>
+                            </div>
+                            <div class="mb-2"><span class="badge bg-info text-dark me-2">链接</span><a id="song_url" href="" target="_blank">新窗口播放</a></div>
+                            <div class="mb-2"><span class="badge bg-dark me-2">歌词</span></div>
+                            <div class="lyric-box" id="lyric"></div>
                         </div>
                     </div>
-                    <div id="album-desc" class="mb-2 text-secondary small"></div>
-                    <div>共 <span id="album-count"></span> 首歌</div>
+                    <div class="row g-0">
+                        <div class="col-12 p-3 pt-0">
+                            <div id="aplayer"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <ul class="list-group mt-3" id="album-tracks"></ul>
         </div>
     </div>
-    <!-- Modal for big picture -->
-    <div class="modal fade" id="bigPicModal" tabindex="-1" aria-labelledby="bigPicModalLabel" aria-hidden="true">
+
+    <div class="modal fade" id="bigPicModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="bigPicModalLabel">大图预览</h5>
+                    <h5 class="modal-title">大图预览</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body text-center">
-                    <img id="big-pic-img" src="" alt="大图" style="max-width:100%;max-height:60vh;border-radius:10px;box-shadow:0 2px 12px rgba(0,0,0,0.12);">
+                    <img id="big-pic-img" src="" alt="大图" style="max-width:100%;max-height:60vh;border-radius:10px;">
                 </div>
             </div>
         </div>
     </div>
-    <footer class="footer mt-5 py-3 bg-light border-top">
+
+    <footer class="footer py-3 bg-light border-top">
         <div class="container text-center text-muted small">
             <span>网易云音乐工具箱 &copy; 2025 | Powered by Suxiaoqingx &amp; Bootstrap | <a href="https://github.com/Suxiaoqinx/Netease_url" target="_blank">GitHub</a></span>
         </div>
     </footer>
+
     <script src="https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/aplayer/1.10.1/APlayer.min.js"></script>
     <script src="https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/twitter-bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
@@ -276,411 +342,688 @@
             function lrctrim(lyrics) {
                 const lines = lyrics.split('\n');
                 const data = [];
-
                 lines.forEach((line, index) => {
                     const matches = line.match(/\[(\d{2}):(\d{2}[\.:]?\d*)]/);
                     if (matches) {
                         const minutes = parseInt(matches[1], 10);
                         const seconds = parseFloat(matches[2].replace('.', ':')) || 0;
                         const timestamp = minutes * 60000 + seconds * 1000;
-
                         let text = line.replace(/\[\d{2}:\d{2}[\.:]?\d*\]/g, '').trim();
-                        text = text.replace(/\s\s+/g, ' '); // Replace multiple spaces with a single space
-
+                        text = text.replace(/\s\s+/g, ' ');
                         data.push([timestamp, index, text]);
                     }
                 });
-
                 data.sort((a, b) => a[0] - b[0]);
-
                 return data;
             }
 
             function lrctran(lyric, tlyric) {
                 lyric = lrctrim(lyric);
                 tlyric = lrctrim(tlyric);
-
                 let len1 = lyric.length;
                 let len2 = tlyric.length;
-                let result = "";
-
+                let result = '';
                 for (let i = 0, j = 0; i < len1 && j < len2; i++) {
-                    while (lyric[i][0] > tlyric[j][0] && j + 1 < len2) {
-                        j++;
-                    }
-
+                    while (lyric[i][0] > tlyric[j][0] && j + 1 < len2) j++;
                     if (lyric[i][0] === tlyric[j][0]) {
                         tlyric[j][2] = tlyric[j][2].replace('/', '');
-                        if (tlyric[j][2]) {
-                            lyric[i][2] += ` (翻译：${tlyric[j][2]})`;
-                        }
+                        if (tlyric[j][2]) lyric[i][2] += ` (翻译：${tlyric[j][2]})`;
                         j++;
                     }
                 }
-
                 for (let i = 0; i < len1; i++) {
                     let t = lyric[i][0];
                     result += `[${String(Math.floor(t / 60000)).padStart(2, '0')}:${String(Math.floor((t % 60000) / 1000)).padStart(2, '0')}.${String(t % 1000).padStart(3, '0')}]${lyric[i][2]}\n`;
                 }
-
                 return result;
             }
 
-            function extractLinks(text) {
-                var regex = /https?:\/\/\S+/g;
-                var matches = text.match(regex);
-                if (matches) {
-                    return matches[0];
-                } else {
-                    return '';
+            let playlistTracksCache = [];
+            let albumTracksCache = [];
+
+            function switchTab(tabId) {
+                const trigger = document.querySelector(`[data-bs-target="#${tabId}"]`);
+                if (trigger) {
+                    bootstrap.Tab.getOrCreateInstance(trigger).show();
                 }
             }
-    
-            function checkValidLink(link) {
-                if (link.indexOf("http") === -1 || 
-                    (link.indexOf("music.163.com") === -1 && link.indexOf("163cn.tv") === -1)) {
-                    return false;
-                }
-                return true;
+
+            function getProcessedMusicId(raw) {
+                const text = (raw || '').trim();
+                if (!text) return '';
+                const idMatch = text.match(/song\?id=(\d+)/);
+                return idMatch ? idMatch[1] : text;
             }
-    
-            function extractAndCheckId(text) {
-                var link = extractLinks(text);
-                if (checkValidLink(link)) {
-                    return link;
-                } else {
-                    var idRegex = /\b\d+\b/g;
-                    var ids = text.match(idRegex);
-                    if (ids && ids.length > 0) {
-                        return ids[0];
+
+            function escapeHtml(s) {
+                return String(s == null ? '' : s)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;');
+            }
+
+            function showSongParseResult(data) {
+                $('#song_name').text(data.name);
+                $('#artist_names').text(data.ar_name);
+                $('#song_alname').text(data.al_name);
+                $('#song_level').text(data.level);
+                $('#song_size').text(data.size);
+                let processedLyrics = data.lyric || '';
+                if (data.tlyric) {
+                    processedLyrics = lrctran(data.lyric, data.tlyric);
+                }
+                $('#lyric').html(processedLyrics.replace(/\n/g, '<br>'));
+                $('#song_url').attr('href', data.url || '#').text('新窗口播放');
+                $('#song-info').removeClass('d-none');
+                $('#show-big-pic').data('pic', data.pic);
+                const playerEl = document.getElementById('aplayer');
+                playerEl.innerHTML = '';
+                new APlayer({
+                    container: playerEl,
+                    lrcType: 1,
+                    audio: [{
+                        name: data.name,
+                        artist: data.ar_name,
+                        url: data.url,
+                        cover: data.pic,
+                        lrc: processedLyrics
+                    }]
+                });
+            }
+
+            function setDownloadPageBusy(busy) {
+                $('#parse-btn, #download-btn, #offline-download-btn').prop('disabled', busy);
+                if (!busy) {
+                    $('#download-btn').text('下载');
+                    $('#offline-download-btn').text('离线下载');
+                    $('#parse-btn').text('解析');
+                }
+            }
+
+            let activePollTimer = null;
+            let activeJobId = null;
+
+            function stopJobPolling() {
+                if (activePollTimer) {
+                    clearInterval(activePollTimer);
+                    activePollTimer = null;
+                }
+            }
+
+            function setStatus($el, content, asHtml) {
+                if (!$el || !$el.length) return;
+                if (asHtml) $el.html(content || '');
+                else $el.text(content || '');
+            }
+
+            function formatBytesProgressHtml(downloaded, total, extraLabel) {
+                const cur = Number(downloaded) || 0;
+                const all = Number(total) || 0;
+                if (all > 0) {
+                    const pct = Math.min(100, Math.floor(cur * 100 / all));
+                    const curMb = (cur / (1024 * 1024)).toFixed(2);
+                    const allMb = (all / (1024 * 1024)).toFixed(2);
+                    const label = extraLabel ? escapeHtml(extraLabel) : '当前下载';
+                    return (
+                        '<span class="dl-progress">' +
+                            '<span class="dl-progress-label">' + label + '</span>' +
+                            '<span class="dl-progress-pct">' + pct + '%</span>' +
+                            '<span class="dl-progress-bar"><span style="width:' + pct + '%"></span></span>' +
+                            '<span class="dl-progress-size">' + curMb + '/' + allMb + ' <em>(MB)</em></span>' +
+                        '</span>'
+                    );
+                }
+                const tip = extraLabel ? ('当前下载：' + escapeHtml(extraLabel)) : '下载中...';
+                return '<span class="dl-status-chip dl-status-muted">' + tip + '</span>';
+            }
+
+            function taskStatusHtml(task) {
+                if (!task) return '';
+                if (task.status === 'pending') {
+                    return '<span class="dl-status-chip dl-status-muted">等待中</span>';
+                }
+                if (task.status === 'downloading') {
+                    return formatBytesProgressHtml(task.downloaded_bytes, task.total_bytes);
+                }
+                if (task.status === 'done') {
+                    return '<span class="dl-status-chip dl-status-ok">离线下载完成：' + escapeHtml(task.filename || task.name || '') + '</span>';
+                }
+                if (task.status === 'error') {
+                    return '<span class="dl-status-chip dl-status-err">下载错误：' + escapeHtml(task.message || '') + '</span>';
+                }
+                if (task.status === 'cancelled') {
+                    return '<span class="dl-status-chip dl-status-muted">已取消</span>';
+                }
+                if (task.status === 'skipped') {
+                    return '<span class="dl-status-chip dl-status-muted">已跳过</span>';
+                }
+                return '<span class="dl-status-chip">' + escapeHtml(task.message || task.status) + '</span>';
+            }
+
+            function updateLiTaskStatus(task) {
+                const $li = $('li[data-song-id="' + task.music_id + '"]');
+                if (!$li.length) return;
+                $li.find('.song-item-status').html(taskStatusHtml(task));
+            }
+
+            function applyJobToList(job) {
+                (job.tasks || []).forEach(updateLiTaskStatus);
+            }
+
+            function jobSummaryHtml(job) {
+                const p = job.progress || {};
+                const total = p.total || (job.tasks || []).length;
+                const done = p.done || 0;
+                const single = total <= 1;
+
+                if (job.status === 'completed') {
+                    const text = single ? '下载完成' : ('下载完成  ' + done + '/' + total);
+                    return '<span class="dl-status-chip dl-status-ok">' + text + '</span>';
+                }
+                if (job.status === 'failed') {
+                    const err = (job.tasks || []).find(t => t.status === 'error');
+                    const label = err ? (err.name || '') : '';
+                    let text;
+                    if (single) {
+                        text = '下载错误' + (err && err.message ? '：' + err.message : '');
+                    } else {
+                        text = '下载错误：' + label + '  ' + done + '/' + total + (err && err.message ? '  ' + err.message : '');
                     }
-                    return '';
+                    return '<span class="dl-status-chip dl-status-err">' + escapeHtml(text) + '</span>';
                 }
+                if (job.status === 'cancelled') {
+                    const text = single ? '已取消' : ('已取消  ' + done + '/' + total);
+                    return '<span class="dl-status-chip dl-status-muted">' + text + '</span>';
+                }
+
+                if (single) {
+                    return formatBytesProgressHtml(p.downloaded_bytes, p.total_bytes);
+                }
+                const curName = p.current_name || '';
+                const idx = done + (p.current_id ? 1 : 0);
+                // 批量：歌名 + 序号，同时尽量带上当前曲字节进度
+                if (p.total_bytes > 0) {
+                    return formatBytesProgressHtml(
+                        p.downloaded_bytes,
+                        p.total_bytes,
+                        (curName ? curName + ' · ' : '') + idx + '/' + total
+                    );
+                }
+                const tip = (curName ? ('当前下载：' + curName + '  ') : '当前下载：') + idx + '/' + total;
+                return '<span class="dl-status-chip dl-status-muted">' + escapeHtml(tip) + '</span>';
             }
 
-            // 切换功能区
-            $('#mode-select').on('change', function() {
-                if ($(this).val() === 'search') {
-                    $('#search-area').show();
-                    $('#parse-area').hide();
-                    $('#playlist-area').hide();
-                    $('#album-area').hide();
-                    $('#download-area').hide();
-                    $('#song-info').addClass('d-none');
-                    $('#playlist-result').addClass('d-none');
-                    $('#album-result').addClass('d-none');
-                } else if ($(this).val() === 'parse') {
-                    $('#search-area').hide();
-                    $('#parse-area').show();
-                    $('#playlist-area').hide();
-                    $('#album-area').hide();
-                    $('#download-area').hide();
-                    $('#search-result').addClass('d-none');
-                    $('#playlist-result').addClass('d-none');
-                    $('#album-result').addClass('d-none');
-                } else if ($(this).val() === 'playlist') {
-                    $('#search-area').hide();
-                    $('#parse-area').hide();
-                    $('#playlist-area').show();
-                    $('#album-area').hide();
-                    $('#download-area').hide();
-                    $('#search-result').addClass('d-none');
-                    $('#song-info').addClass('d-none');
-                    $('#album-result').addClass('d-none');
-                } else if ($(this).val() === 'album') {
-                    $('#search-area').hide();
-                    $('#parse-area').hide();
-                    $('#playlist-area').hide();
-                    $('#album-area').show();
-                    $('#download-area').hide();
-                    $('#search-result').addClass('d-none');
-                    $('#song-info').addClass('d-none');
-                    $('#playlist-result').addClass('d-none');
-                    $('#album-result').addClass('d-none');
-                } else if ($(this).val() === 'download') {
-                    $('#search-area').hide();
-                    $('#parse-area').hide();
-                    $('#playlist-area').hide();
-                    $('#album-area').hide();
-                    $('#download-area').show();
-                    $('#search-result').addClass('d-none');
-                    $('#song-info').addClass('d-none');
-                    $('#playlist-result').addClass('d-none');
-                    $('#album-result').addClass('d-none');
-                } else {
-                    $('#album-area').hide();
-                    $('#download-area').hide();
-                    $('#album-result').addClass('d-none');
-                }
-            });
+            function buildSongItemHtml(song, idxPrefix) {
+                const title = (idxPrefix != null ? (idxPrefix + '. ') : '') + (song.name || '');
+                const cover = song.picUrl || '';
+                const coverSize = idxPrefix != null ? 32 : 40;
+                return (
+                    '<li class="list-group-item" data-song-id="' + song.id + '">' +
+                        '<div class="song-item-meta">' +
+                            '<div class="song-item-meta-main">' +
+                                '<img src="' + escapeHtml(cover) + '" alt="cover" style="width:' + coverSize + 'px;height:' + coverSize + 'px;object-fit:cover;border-radius:4px;flex-shrink:0;">' +
+                                '<div style="min-width:0;">' +
+                                    '<strong class="song-title">' + escapeHtml(title) + '</strong> - ' +
+                                    '<span>' + escapeHtml(song.artists || '') + '</span> ' +
+                                    '<span class="text-muted">[' + escapeHtml(song.album || '') + ']</span>' +
+                                '</div>' +
+                            '</div>' +
+                            '<div class="song-item-id">ID: ' + escapeHtml(song.id) + '</div>' +
+                        '</div>' +
+                        '<div class="song-item-actions">' +
+                            '<div class="song-item-status"></div>' +
+                            '<div class="song-item-btns">' +
+                                '<button type="button" class="btn btn-sm btn-success download-song" data-id="' + song.id + '" data-name="' + escapeHtml(song.name || '') + '">下载</button>' +
+                                '<button type="button" class="btn btn-sm btn-warning offline-song" data-id="' + song.id + '" data-name="' + escapeHtml(song.name || '') + '">离线下载</button>' +
+                                '<button type="button" class="btn btn-sm btn-outline-primary detail-song" data-id="' + song.id + '" data-name="' + escapeHtml(song.name || '') + '">详情</button>' +
+                            '</div>' +
+                        '</div>' +
+                    '</li>'
+                );
+            }
 
-            // 搜索功能
+            function createDownloadJob(ids, quality) {
+                return new Promise(function(resolve, reject) {
+                    $.ajax({
+                        url: '/download/job',
+                        method: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({
+                            ids: ids,
+                            quality: quality || 'jymaster',
+                            stop_on_error: true
+                        }),
+                        dataType: 'json'
+                    }).done(function(data) {
+                        if (data.status === 200 && data.data) resolve(data.data);
+                        else reject(new Error((data && data.message) || '创建下载任务失败'));
+                    }).fail(function(xhr) {
+                        let msg = '创建下载任务失败';
+                        try {
+                            const resp = JSON.parse(xhr.responseText);
+                            if (resp.message) msg = resp.message;
+                        } catch (e) {}
+                        reject(new Error(msg));
+                    });
+                });
+            }
+
+            function fetchJob(jobId) {
+                return new Promise(function(resolve, reject) {
+                    $.getJSON('/download/job/' + jobId).done(function(data) {
+                        if (data.status === 200 && data.data) resolve(data.data);
+                        else reject(new Error((data && data.message) || '查询任务失败'));
+                    }).fail(function() {
+                        reject(new Error('查询任务失败'));
+                    });
+                });
+            }
+
+            function cancelJob(jobId) {
+                return $.ajax({
+                    url: '/download/job/' + jobId + '/cancel',
+                    method: 'POST',
+                    dataType: 'json'
+                });
+            }
+
+            /**
+             * 启动后台任务并轮询；任务在服务端独立执行，关页面不影响落盘。
+             * onUpdate(job) 每次轮询回调；结束后自动停表。
+             */
+            function startJobAndPoll(ids, quality, onUpdate) {
+                stopJobPolling();
+                return createDownloadJob(ids, quality).then(function(job) {
+                    activeJobId = job.job_id;
+                    if (onUpdate) onUpdate(job);
+
+                    return new Promise(function(resolve, reject) {
+                        const tick = function() {
+                            fetchJob(activeJobId).then(function(latest) {
+                                if (onUpdate) onUpdate(latest);
+                                const finished = ['completed', 'failed', 'cancelled'].indexOf(latest.status) >= 0;
+                                if (finished) {
+                                    stopJobPolling();
+                                    activeJobId = null;
+                                    resolve(latest);
+                                }
+                            }).catch(function(err) {
+                                stopJobPolling();
+                                activeJobId = null;
+                                reject(err);
+                            });
+                        };
+                        activePollTimer = setInterval(tick, 1000);
+                        tick();
+                    });
+                });
+            }
+
+            /** 浏览器保存：先后台落盘，再拉取本地文件 */
+            function browserSaveDownload(musicId, quality, $status, onDone) {
+                setStatus($status, '<span class="dl-status-chip dl-status-muted">下载中...</span>', true);
+                startJobAndPoll([musicId], quality, function(job) {
+                    applyJobToList(job);
+                    const task = (job.tasks || [])[0];
+                    if (task) setStatus($status, taskStatusHtml(task), true);
+                    else setStatus($status, jobSummaryHtml(job), true);
+                }).then(function(job) {
+                    const task = (job.tasks || [])[0];
+                    if (!task || task.status !== 'done') {
+                        setStatus($status, task ? taskStatusHtml(task) : '<span class="dl-status-chip dl-status-err">下载失败</span>', true);
+                        if (onDone) onDone(false);
+                        return;
+                    }
+                    setStatus($status, '<span class="dl-status-chip dl-status-muted">正在推送到浏览器...</span>', true);
+                    const xhr = new XMLHttpRequest();
+                    xhr.open('POST', '/Download', true);
+                    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                    xhr.responseType = 'blob';
+                    xhr.onload = function() {
+                        if (xhr.status === 200) {
+                            const encodedFilename = xhr.getResponseHeader('X-Download-Filename');
+                            const filename = encodedFilename ? decodeURIComponent(encodedFilename) : (task.filename || 'music.flac');
+                            const blob = xhr.response;
+                            const url = window.URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = filename;
+                            document.body.appendChild(a);
+                            a.click();
+                            document.body.removeChild(a);
+                            window.URL.revokeObjectURL(url);
+                            setStatus($status, '<span class="dl-status-chip dl-status-ok">下载完成：' + escapeHtml(filename) + '</span>', true);
+                            if (onDone) onDone(true, filename);
+                        } else {
+                            setStatus($status, '<span class="dl-status-chip dl-status-err">文件已落盘，但浏览器保存失败</span>', true);
+                            if (onDone) onDone(false);
+                        }
+                    };
+                    xhr.onerror = function() {
+                        setStatus($status, '<span class="dl-status-chip dl-status-err">文件已落盘，但浏览器保存失败</span>', true);
+                        if (onDone) onDone(false);
+                    };
+                    xhr.send(`id=${encodeURIComponent(musicId)}&quality=${encodeURIComponent(quality)}&format=file`);
+                }).catch(function(err) {
+                    setStatus($status, '<span class="dl-status-chip dl-status-err">' + escapeHtml(err.message || '下载失败') + '</span>', true);
+                    if (onDone) onDone(false);
+                });
+            }
+
+            /** 离线下载（单曲或多曲统一走 ids 数组任务） */
+            function offlineDownloadIds(ids, quality, $summaryStatus, onDone) {
+                if (!ids || !ids.length) {
+                    setStatus($summaryStatus, '<span class="dl-status-chip dl-status-muted">没有可下载的歌曲</span>', true);
+                    if (onDone) onDone(null);
+                    return;
+                }
+                setStatus($summaryStatus, '<span class="dl-status-chip dl-status-muted">下载中...</span>', true);
+                startJobAndPoll(ids, quality, function(job) {
+                    applyJobToList(job);
+                    setStatus($summaryStatus, jobSummaryHtml(job), true);
+                }).then(function(job) {
+                    setStatus($summaryStatus, jobSummaryHtml(job), true);
+                    if (onDone) onDone(job);
+                }).catch(function(err) {
+                    setStatus($summaryStatus, '<span class="dl-status-chip dl-status-err">' + escapeHtml(err.message || '离线下载失败') + '</span>', true);
+                    if (onDone) onDone(null);
+                });
+            }
+
+            function renderTrackList($ul, tracks, withIndex) {
+                $ul.empty();
+                tracks.forEach(function(song, idx) {
+                    $ul.append(buildSongItemHtml(song, withIndex ? (idx + 1) : null));
+                });
+            }
+
+            function fetchPlaylist(pid) {
+                return new Promise(function(resolve, reject) {
+                    $.get('/Playlist', { id: pid }, function(data) {
+                        if (data.status === 200 && data.data && data.data.playlist) {
+                            resolve(data.data.playlist);
+                        } else {
+                            reject(new Error((data.data && data.data.msg) || data.message || '歌单解析失败'));
+                        }
+                    }, 'json').fail(function() {
+                        reject(new Error('歌单解析失败，请重试'));
+                    });
+                });
+            }
+
+            function fetchAlbum(aid) {
+                return new Promise(function(resolve, reject) {
+                    $.get('/Album', { id: aid }, function(data) {
+                        if (data.status === 200 && data.data && data.data.album) {
+                            resolve(data.data.album);
+                        } else {
+                            reject(new Error((data.data && data.data.msg) || data.message || '专辑解析失败'));
+                        }
+                    }, 'json').fail(function() {
+                        reject(new Error('专辑解析失败，请重试'));
+                    });
+                });
+            }
+
+            function showPlaylist(pl) {
+                playlistTracksCache = pl.tracks || [];
+                $('#playlist-cover').attr('src', pl.coverImgUrl || '');
+                $('#playlist-name').text(pl.name || '');
+                $('#playlist-creator').text('by ' + (pl.creator || ''));
+                $('#playlist-desc').text(pl.description || '');
+                $('#playlist-count').text(pl.trackCount || playlistTracksCache.length);
+                renderTrackList($('#playlist-tracks'), playlistTracksCache, true);
+                $('#playlist-result').removeClass('d-none');
+                $('#playlist-offline-btn').prop('disabled', playlistTracksCache.length === 0);
+            }
+
+            function showAlbum(al) {
+                albumTracksCache = al.songs || [];
+                $('#album-cover').attr('src', al.coverImgUrl || '');
+                $('#album-name').text(al.name || '');
+                $('#album-artist').text(al.artist || '');
+                $('#album-desc').text(al.description || '');
+                $('#album-count').text(albumTracksCache.length);
+                renderTrackList($('#album-tracks'), albumTracksCache, true);
+                $('#album-result').removeClass('d-none');
+                $('#album-offline-btn').prop('disabled', albumTracksCache.length === 0);
+            }
+
+            // 搜索
             $('#search-btn').on('click', function() {
                 const keywords = $('#search_keywords').val();
                 const limit = $('#search_limit').val();
                 if (!keywords) {
-                    alert('请输入搜索关键词');
+                    setStatus($('#search-status'), '请输入搜索关键词');
                     return;
                 }
+                setStatus($('#search-status'), '搜索中...');
                 $.ajax({
                     url: '/Search',
                     method: 'POST',
                     data: { keyword: keywords, limit: limit },
                     dataType: 'json',
                     success: function(data) {
-                        if (data.status === 200) {
+                        if (data.status === 200 && data.data && data.data.length) {
                             $('#search-list').empty();
                             data.data.forEach(function(song) {
-                                const item = `<li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <img src="${song.picUrl}" alt="cover" style="width:40px;height:40px;object-fit:cover;border-radius:4px;margin-right:10px;">
-                                        <strong class='song-title'>${song.name}</strong> - <span>${song.artists}</span> <span class="text-muted">[${song.album}]</span>
-                                    </div>
-                                    <div>
-                                        <button class="btn btn-sm btn-outline-primary select-song me-2" data-id="${song.id}" data-name="${song.name}">解析</button>
-                                        <button class="btn btn-sm btn-success download-song" data-id="${song.id}" data-name="${song.name}">下载</button>
-                                    </div>
-                                </li>`;
-                                $('#search-list').append(item);
+                                $('#search-list').append(buildSongItemHtml(song, null));
                             });
                             $('#search-result').removeClass('d-none');
+                            setStatus($('#search-status'), '搜索完成，共 ' + data.data.length + ' 首');
                         } else {
                             $('#search-list').html('<li class="list-group-item">未找到相关歌曲</li>');
                             $('#search-result').removeClass('d-none');
+                            setStatus($('#search-status'), '未找到相关歌曲');
                         }
                     },
                     error: function() {
                         $('#search-list').html('<li class="list-group-item">搜索失败，请重试</li>');
                         $('#search-result').removeClass('d-none');
+                        setStatus($('#search-status'), '搜索失败，请重试');
                     }
                 });
             });
 
-            // 搜索结果点击解析
-            $(document).on('click', '.select-song', function() {
-                const songId = $(this).data('id');
-                $('#song_ids').val(songId);
-                $('#mode-select').val('parse').trigger('change');
-                $('html,body').animate({scrollTop: $('#main-form').offset().top}, 300);
-            });
-
-            // 单曲解析
+            // 详情页解析
             $('#parse-btn').on('click', function() {
-                const songIds = $('#song_ids').val();
-                const level = $('#level').val();
+                const songIds = getProcessedMusicId($('#download_id').val());
+                const level = $('#download_quality').val();
                 if (!songIds) {
-                    alert('请输入歌曲ID或URL');
+                    setStatus($('#download-status'), '请输入音乐ID或URL');
                     return;
                 }
-                $.post('/Song_V1', { url: songIds, level: level, type:'json' }, function(data) {
+                setDownloadPageBusy(true);
+                $('#parse-btn').text('解析中...');
+                setStatus($('#download-status'), '正在解析...');
+                $.post('/Song_V1', { url: songIds, level: level, type: 'json' }, function(data) {
+                    setDownloadPageBusy(false);
                     if (data.status === 200) {
-                        $('#song_name').text(data.data.name);
-                        $('#artist_names').text(data.data.ar_name);
-                        $('#song_alname').text(data.data.al_name);
-                        $('#song_level').text(data.data.level);
-                        $('#song_size').text(data.data.size);
-                        let processedLyrics = data.data.lyric;
-                        if (data.data.tlyric) {
-                            processedLyrics = lrctran(data.data.lyric, data.data.tlyric);
-                        }
-                        $('#lyric').html(processedLyrics.replace(/\n/g, '<br>'));
-                        $('#song_url').attr('href', data.data.url).text('点击下载');
-                        $('#song-info').removeClass('d-none');
-                        $('#show-big-pic').data('pic', data.data.pic);
-                        new APlayer({
-                            container: document.getElementById('aplayer'),
-                            lrcType: 1,
-                            audio: [{
-                                name: data.data.name,
-                                artist: data.data.ar_name,
-                                url: data.data.url,
-                                cover: data.data.pic,
-                                lrc: processedLyrics
-                            }]
-                        });
+                        showSongParseResult(data.data);
+                        setStatus($('#download-status'), '解析完成');
                     } else {
-                        alert(data.data.msg);
+                        setStatus($('#download-status'), (data.data && data.data.msg) || data.message || '解析失败');
                     }
-                }, 'json');
+                }, 'json').fail(function() {
+                    setDownloadPageBusy(false);
+                    setStatus($('#download-status'), '解析失败，请重试');
+                });
             });
 
-            // 显示大图按钮事件
             $(document).on('click', '#show-big-pic', function() {
-                var picUrl = $(this).data('pic');
-                $('#big-pic-img').attr('src', picUrl);
-                var modal = new bootstrap.Modal(document.getElementById('bigPicModal'));
-                modal.show();
+                $('#big-pic-img').attr('src', $(this).data('pic'));
+                new bootstrap.Modal(document.getElementById('bigPicModal')).show();
             });
 
             // 歌单解析
-            $('#playlist-btn').on('click', function() {
+            $('#playlist-btn').on('click', async function() {
                 let pid = $('#playlist_id').val().trim();
                 if (!pid) {
-                    alert('请输入歌单ID或链接');
+                    setStatus($('#playlist-status'), '请输入歌单ID或链接');
                     return;
                 }
-                // 支持直接粘贴歌单链接
                 const idMatch = pid.match(/playlist\?id=(\d+)/);
                 if (idMatch) pid = idMatch[1];
-                $.get('/Playlist', { id: pid }, function(data) {
-                    if (data.status === 200) {
-                        const pl = data.data.playlist;
-                        $('#playlist-cover').attr('src', pl.coverImgUrl);
-                        $('#playlist-name').text(pl.name);
-                        $('#playlist-creator').text('by ' + pl.creator);
-                        $('#playlist-desc').text(pl.description || '');
-                        $('#playlist-count').text(pl.trackCount);
-                        $('#playlist-tracks').empty();
-                        pl.tracks.forEach(function(song, idx) {
-                            const item = `<li class="list-group-item d-flex justify-content-between align-items-center">
-                                <div>
-                                    <img src="${song.picUrl}" alt="cover" style="width:32px;height:32px;object-fit:cover;border-radius:4px;margin-right:8px;">
-                                    <strong class="playlist-title">${idx+1}. ${song.name}</strong> - <span>${song.artists}</span> <span class="text-muted">[${song.album}]</span>
-                                </div>
-                                <div>
-                                    <button class="btn btn-sm btn-outline-primary select-song me-2" data-id="${song.id}" data-name="${song.name}">解析</button>
-                                    <button class="btn btn-sm btn-success download-song" data-id="${song.id}" data-name="${song.name}">下载</button>
-                                </div>
-                            </li>`;
-                            $('#playlist-tracks').append(item);
-                        });
-                        $('#playlist-result').removeClass('d-none');
-                    } else {
-                        $('#playlist-result').removeClass('d-none');
-                        $('#playlist-tracks').html('<li class="list-group-item">歌单解析失败：'+data.data.msg+'</li>');
-                    }
-                }, 'json');
+                setStatus($('#playlist-status'), '正在解析歌单...');
+                $('#playlist-btn').prop('disabled', true);
+                $('#playlist-offline-btn').prop('disabled', true);
+                try {
+                    const pl = await fetchPlaylist(pid);
+                    showPlaylist(pl);
+                    setStatus($('#playlist-status'), '解析完成，共 ' + playlistTracksCache.length + ' 首');
+                    setStatus($('#playlist-result-status'), '');
+                } catch (e) {
+                    playlistTracksCache = [];
+                    $('#playlist-offline-btn').prop('disabled', true);
+                    $('#playlist-result').removeClass('d-none');
+                    $('#playlist-tracks').html('<li class="list-group-item">歌单解析失败：' + escapeHtml(e.message) + '</li>');
+                    setStatus($('#playlist-status'), e.message);
+                } finally {
+                    $('#playlist-btn').prop('disabled', false);
+                }
+            });
+
+            $('#playlist-offline-btn').on('click', function() {
+                if (!playlistTracksCache.length) {
+                    setStatus($('#playlist-status'), '请先解析歌单获取有效列表');
+                    return;
+                }
+                const ids = playlistTracksCache.map(s => s.id);
+                // 按钮下方不展示下载进度，仅在结果区/列表更新
+                setStatus($('#playlist-status'), '');
+                $('#playlist-btn, #playlist-offline-btn').prop('disabled', true);
+                $('#playlist-cancel-btn').removeClass('d-none');
+                offlineDownloadIds(ids, 'jymaster', $('#playlist-result-status'), function(job) {
+                    $('#playlist-btn').prop('disabled', false);
+                    $('#playlist-offline-btn').prop('disabled', !playlistTracksCache.length);
+                    $('#playlist-cancel-btn').addClass('d-none');
+                });
+            });
+
+            $('#playlist-cancel-btn').on('click', function() {
+                if (!activeJobId) return;
+                cancelJob(activeJobId);
+                setStatus($('#playlist-result-status'), '<span class="dl-status-chip dl-status-muted">已请求停止，当前曲目结束后不再继续</span>', true);
+                alert('已发送停止请求：当前正在下载的歌曲结束后，将停止后续下载。');
             });
 
             // 专辑解析
-            $(document).on('click', '#album-btn', function() {
+            $('#album-btn').on('click', async function() {
                 let aid = $('#album_id').val().trim();
                 if (!aid) {
-                    alert('请输入专辑ID或链接');
+                    setStatus($('#album-status'), '请输入专辑ID或链接');
                     return;
                 }
-                // 支持直接粘贴专辑链接
                 const idMatch = aid.match(/album\?id=(\d+)/);
                 if (idMatch) aid = idMatch[1];
-                $.get('/Album', { id: aid }, function(data) {
-                    if (data.status === 200) {
-                        const al = data.data.album;
-                        $('#album-cover').attr('src', al.coverImgUrl);
-                        $('#album-name').text(al.name);
-                        $('#album-artist').text(al.artist);
-                        $('#album-desc').text(al.description || '');
-                        $('#album-count').text(al.songs.length);
-                        $('#album-tracks').empty();
-                        al.songs.forEach(function(song, idx) {
-                            const item = `<li class="list-group-item d-flex justify-content-between align-items-center">
-                                <div>
-                                    <img src="${song.picUrl}" alt="cover" style="width:32px;height:32px;object-fit:cover;border-radius:4px;margin-right:8px;">
-                                    <strong class="playlist-title">${idx+1}. ${song.name}</strong> - <span>${song.artists}</span> <span class="text-muted">[${song.album}]</span>
-                                </div>
-                                <div>
-                                    <button class="btn btn-sm btn-outline-primary select-song me-2" data-id="${song.id}" data-name="${song.name}">解析</button>
-                                    <button class="btn btn-sm btn-success download-song" data-id="${song.id}" data-name="${song.name}">下载</button>
-                                </div>
-                            </li>`;
-                            $('#album-tracks').append(item);
-                        });
-                        $('#album-result').removeClass('d-none');
-                    } else {
-                        $('#album-result').removeClass('d-none');
-                        $('#album-tracks').html('<li class="list-group-item">专辑解析失败：'+data.data.msg+'</li>');
-                    }
-                }, 'json');
+                setStatus($('#album-status'), '正在解析专辑...');
+                $('#album-btn').prop('disabled', true);
+                $('#album-offline-btn').prop('disabled', true);
+                try {
+                    const al = await fetchAlbum(aid);
+                    showAlbum(al);
+                    setStatus($('#album-status'), '解析完成，共 ' + albumTracksCache.length + ' 首');
+                    setStatus($('#album-result-status'), '');
+                } catch (e) {
+                    albumTracksCache = [];
+                    $('#album-offline-btn').prop('disabled', true);
+                    $('#album-result').removeClass('d-none');
+                    $('#album-tracks').html('<li class="list-group-item">专辑解析失败：' + escapeHtml(e.message) + '</li>');
+                    setStatus($('#album-status'), e.message);
+                } finally {
+                    $('#album-btn').prop('disabled', false);
+                }
             });
 
-            // 音乐下载功能
-            $('#download-btn').on('click', function() {
-                const musicId = $('#download_id').val().trim();
-                const quality = $('#download_quality').val();
-                
-                if (!musicId) {
-                    alert('请输入音乐ID或URL');
+            $('#album-offline-btn').on('click', function() {
+                if (!albumTracksCache.length) {
+                    setStatus($('#album-status'), '请先解析专辑获取有效列表');
                     return;
                 }
-                
-                // 提取ID（支持URL格式）
-                let processedId = musicId;
-                const idMatch = musicId.match(/song\?id=(\d+)/);
-                if (idMatch) {
-                    processedId = idMatch[1];
-                }
-                
-                // 显示进度条
-                $('#download-progress').removeClass('d-none');
-                $('#download-btn').prop('disabled', true).text('下载中...');
-                
-                // 使用XMLHttpRequest来处理下载并获取响应头
-                const xhr = new XMLHttpRequest();
-                xhr.open('POST', '/Download', true);
-                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-                xhr.responseType = 'blob';
-                
-                xhr.onload = function() {
-                    if (xhr.status === 200) {
-                        // 获取自定义响应头
-                        const downloadMessage = xhr.getResponseHeader('X-Download-Message');
-                        const encodedFilename = xhr.getResponseHeader('X-Download-Filename');
-                        const filename = encodedFilename ? decodeURIComponent(encodedFilename) : 'music.flac';
-                        
-                        // 创建下载链接
-                        const blob = xhr.response;
-                        const url = window.URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = filename || 'music.flac';
-                        document.body.appendChild(a);
-                        a.click();
-                        document.body.removeChild(a);
-                        window.URL.revokeObjectURL(url);
-                        
-                        // 显示完成提示
-                        alert('✅ 音乐文件下载完成！');
-                        console.log(`下载完成: ${filename}`);
-                        if (downloadMessage) {
-                            console.log(`服务器消息: ${downloadMessage}`);
-                        }
-                    } else {
-                        alert('下载失败，请重试');
-                    }
-                    
-                    // 重置按钮状态
-                    $('#download-progress').addClass('d-none');
-                    $('#download-btn').prop('disabled', false).text('下载音乐');
-                };
-                
-                xhr.onerror = function() {
-                    alert('下载出错，请重试');
-                    $('#download-progress').addClass('d-none');
-                    $('#download-btn').prop('disabled', false).text('下载音乐');
-                };
-                
-                // 发送请求
-                const formData = `id=${encodeURIComponent(processedId)}&quality=${encodeURIComponent(quality)}`;
-                xhr.send(formData);
+                const ids = albumTracksCache.map(s => s.id);
+                // 按钮下方不展示下载进度，仅在结果区/列表更新
+                setStatus($('#album-status'), '');
+                $('#album-btn, #album-offline-btn').prop('disabled', true);
+                $('#album-cancel-btn').removeClass('d-none');
+                offlineDownloadIds(ids, 'jymaster', $('#album-result-status'), function(job) {
+                    $('#album-btn').prop('disabled', false);
+                    $('#album-offline-btn').prop('disabled', !albumTracksCache.length);
+                    $('#album-cancel-btn').addClass('d-none');
+                });
             });
 
-            // 列表中的下载按钮点击事件
-            // 下载按钮点击跳转到下载功能
+            $('#album-cancel-btn').on('click', function() {
+                if (!activeJobId) return;
+                cancelJob(activeJobId);
+                setStatus($('#album-result-status'), '<span class="dl-status-chip dl-status-muted">已请求停止，当前曲目结束后不再继续</span>', true);
+                alert('已发送停止请求：当前正在下载的歌曲结束后，将停止后续下载。');
+            });
+
+            // 音乐下载页
+            $('#download-btn').on('click', function() {
+                const processedId = getProcessedMusicId($('#download_id').val());
+                const quality = $('#download_quality').val();
+                if (!processedId) {
+                    setStatus($('#download-status'), '请输入音乐ID或URL');
+                    return;
+                }
+                setDownloadPageBusy(true);
+                $('#download-btn').text('下载中...');
+                browserSaveDownload(processedId, quality, $('#download-status'), function() {
+                    setDownloadPageBusy(false);
+                });
+            });
+
+            $('#offline-download-btn').on('click', function() {
+                const processedId = getProcessedMusicId($('#download_id').val());
+                const quality = $('#download_quality').val();
+                if (!processedId) {
+                    setStatus($('#download-status'), '请输入音乐ID或URL');
+                    return;
+                }
+                setDownloadPageBusy(true);
+                $('#offline-download-btn').text('下载中...');
+                offlineDownloadIds([processedId], quality, $('#download-status'), function() {
+                    setDownloadPageBusy(false);
+                });
+            });
+
+            // 列表：下载（本行状态）
             $(document).on('click', '.download-song', function() {
                 const musicId = $(this).data('id');
-                const songName = $(this).data('name');
-                
-                if (!musicId) {
-                    alert('无法获取音乐ID');
-                    return;
-                }
-                
-                // 填充下载ID并跳转到下载功能区域
+                if (!musicId) return;
+                const $li = $(this).closest('li');
+                const $status = $li.find('.song-item-status');
+                const $btns = $li.find('.song-item-btns .btn');
+                $btns.prop('disabled', true);
+                browserSaveDownload(musicId, 'jymaster', $status, function() {
+                    $btns.prop('disabled', false);
+                });
+            });
+
+            // 列表：离线下载（本行状态）
+            $(document).on('click', '.offline-song', function() {
+                const musicId = $(this).data('id');
+                if (!musicId) return;
+                const $li = $(this).closest('li');
+                const $status = $li.find('.song-item-status');
+                const $btns = $li.find('.song-item-btns .btn');
+                $btns.prop('disabled', true);
+                offlineDownloadIds([musicId], 'jymaster', $status, function() {
+                    $btns.prop('disabled', false);
+                });
+            });
+
+            // 列表：详情 -> 音乐下载 tab
+            $(document).on('click', '.detail-song', function() {
+                const musicId = $(this).data('id');
+                if (!musicId) return;
                 $('#download_id').val(musicId);
-                $('#mode-select').val('download').trigger('change');
-                $('html,body').animate({scrollTop: $('#main-form').offset().top}, 300);
+                switchTab('tab-download');
+                $('#parse-btn').trigger('click');
             });
         });
     </script>
 </body>
 </html>
-
