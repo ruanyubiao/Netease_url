@@ -20,9 +20,11 @@ class SongTaskState:
     status: str = "pending"  # pending / downloading / done / error / cancelled / skipped
     message: str = ""
     filename: str = ""
+    lyric_filename: str = ""
     name: str = ""
     artists: str = ""
     file_path: str = ""
+    lyric_path: str = ""
     downloaded_bytes: int = 0
     total_bytes: int = 0
 
@@ -172,13 +174,18 @@ class DownloadJobManager:
                 task.status = "done"
                 task.file_path = result.file_path or ""
                 task.filename = Path(result.file_path).name if result.file_path else ""
+                task.lyric_path = result.lyric_path or ""
+                task.lyric_filename = Path(result.lyric_path).name if result.lyric_path else ""
                 if meta:
                     task.name = meta.name
                     task.artists = meta.artists
                 if result.file_size:
                     task.downloaded_bytes = result.file_size
                     task.total_bytes = result.file_size
-                task.message = f"离线下载完成：{task.filename or task.name}"
+                if task.lyric_filename:
+                    task.message = f"离线下载完成：{task.filename or task.name} + {task.lyric_filename}"
+                else:
+                    task.message = f"离线下载完成：{task.filename or task.name}"
             except Exception as e:
                 task.status = "error"
                 err = str(e) or "下载失败"

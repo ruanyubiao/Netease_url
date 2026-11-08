@@ -75,6 +75,7 @@ class DownloadResult:
     file_size: int = 0
     error_message: str = ""
     music_info: Optional[MusicInfo] = None
+    lyric_path: Optional[str] = None
 
 
 class DownloadException(Exception):
@@ -120,6 +121,28 @@ class MusicDownloader:
             if path.is_file() and path.stat().st_size > 0:
                 return path
         return None
+
+    def _lyric_text(self, music_info: MusicInfo) -> str:
+        """优先原文歌词，没有则用翻译歌词。"""
+        text = (music_info.lyric or "").strip()
+        if not text:
+            text = (music_info.tlyric or "").strip()
+        return text
+
+    def _save_lyric_file(self, music_info: MusicInfo, audio_path: Path) -> Optional[str]:
+        """将歌词写到与音频同名的 .lrc；无歌词时返回 None，不影响音频下载。"""
+        text = self._lyric_text(music_info)
+        if not text:
+            return None
+        lyric_path = audio_path.with_suffix('.lrc')
+        try:
+            if not text.endswith('\n'):
+                text += '\n'
+            lyric_path.write_text(text, encoding='utf-8')
+            return str(lyric_path)
+        except Exception as e:
+            print(f"写入歌词失败: {e}")
+            return None
 
     def _sanitize_filename(self, filename: str) -> str:
         """清理文件名，移除非法字符
@@ -260,11 +283,13 @@ class MusicDownloader:
                 size = existing.stat().st_size
                 if progress_callback:
                     progress_callback(size, size, music_info)
+                lyric_path = self._save_lyric_file(music_info, existing)
                 return DownloadResult(
                     success=True,
                     file_path=str(existing),
                     file_size=size,
-                    music_info=music_info
+                    music_info=music_info,
+                    lyric_path=lyric_path,
                 )
 
             file_ext = self._determine_file_extension(music_info.download_url)
@@ -297,11 +322,13 @@ class MusicDownloader:
             if progress_callback:
                 progress_callback(final_size, final_size or total, music_info)
 
+            lyric_path = self._save_lyric_file(music_info, file_path)
             return DownloadResult(
                 success=True,
                 file_path=str(file_path),
                 file_size=final_size,
-                music_info=music_info
+                music_info=music_info,
+                lyric_path=lyric_path,
             )
             
         except DownloadException:
@@ -341,11 +368,13 @@ class MusicDownloader:
             
             # 检查文件是否已存在
             if file_path.exists():
+                lyric_path = self._save_lyric_file(music_info, file_path)
                 return DownloadResult(
                     success=True,
                     file_path=str(file_path),
                     file_size=file_path.stat().st_size,
-                    music_info=music_info
+                    music_info=music_info,
+                    lyric_path=lyric_path,
                 )
             
             # 异步下载文件
@@ -359,12 +388,14 @@ class MusicDownloader:
             
             # 写入音乐标签
             self._write_music_tags(file_path, music_info)
-            
+
+            lyric_path = self._save_lyric_file(music_info, file_path)
             return DownloadResult(
                 success=True,
                 file_path=str(file_path),
                 file_size=file_path.stat().st_size,
-                music_info=music_info
+                music_info=music_info,
+                lyric_path=lyric_path,
             )
             
         except DownloadException:

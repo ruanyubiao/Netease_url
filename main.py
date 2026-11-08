@@ -508,8 +508,8 @@ def download_music_api():
             return APIResponse.error(f"无效的音质参数，支持: {', '.join(valid_qualities)}")
         
         # 验证返回格式
-        if return_format not in ['file', 'json']:
-            return APIResponse.error("返回格式只支持 'file' 或 'json'")
+        if return_format not in ['file', 'json', 'lyric']:
+            return APIResponse.error("返回格式只支持 'file'、'json' 或 'lyric'")
         
         music_id = api_service._extract_music_id(music_id)
         try:
@@ -530,8 +530,12 @@ def download_music_api():
         
         file_path = Path(download_result.file_path)
         filename = file_path.name
+        lyric_path = Path(download_result.lyric_path) if download_result.lyric_path else None
+        lyric_filename = lyric_path.name if lyric_path else ''
         music_meta = download_result.music_info
-        api_service.logger.info(f"下载完成: {filename}")
+        api_service.logger.info(
+            f"下载完成: {filename}" + (f" + {lyric_filename}" if lyric_filename else "")
+        )
         
         # 根据返回格式返回结果
         if return_format == 'json':
@@ -548,9 +552,27 @@ def download_music_api():
                 'file_size_formatted': api_service._format_file_size(file_size),
                 'file_path': str(file_path.absolute()),
                 'filename': filename,
+                'lyric_path': str(lyric_path.absolute()) if lyric_path else '',
+                'lyric_filename': lyric_filename,
                 'duration': music_meta.duration if music_meta else 0
             }
             return APIResponse.success(response_data, "下载完成")
+        elif return_format == 'lyric':
+            if not lyric_path or not lyric_path.exists():
+                return APIResponse.error("暂无歌词文件", 404)
+            try:
+                response = send_file(
+                    str(lyric_path),
+                    as_attachment=True,
+                    download_name=lyric_filename,
+                    mimetype='text/plain; charset=utf-8'
+                )
+                response.headers['X-Download-Message'] = 'Lyric download completed'
+                response.headers['X-Download-Filename'] = quote(lyric_filename, safe='')
+                return response
+            except Exception as e:
+                api_service.logger.error(f"发送歌词失败: {e}")
+                return APIResponse.error(f"歌词发送失败: {str(e)}", 500)
         else:
             # 返回文件下载（浏览器保存名与 downloads 目录一致）
             if not file_path.exists():
@@ -566,6 +588,8 @@ def download_music_api():
                 )
                 response.headers['X-Download-Message'] = 'Download completed successfully'
                 response.headers['X-Download-Filename'] = quote(filename, safe='')
+                if lyric_filename:
+                    response.headers['X-Lyric-Filename'] = quote(lyric_filename, safe='')
                 return response
             except Exception as e:
                 api_service.logger.error(f"发送文件失败: {e}")

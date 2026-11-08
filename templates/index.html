@@ -487,7 +487,9 @@
                     return formatBytesProgressHtml(task.downloaded_bytes, task.total_bytes);
                 }
                 if (task.status === 'done') {
-                    return '<span class="dl-status-chip dl-status-ok">离线下载完成：' + escapeHtml(task.filename || task.name || '') + '</span>';
+                    let doneText = '离线下载完成：' + (task.filename || task.name || '');
+                    if (task.lyric_filename) doneText += ' + ' + task.lyric_filename;
+                    return '<span class="dl-status-chip dl-status-ok">' + escapeHtml(doneText) + '</span>';
                 }
                 if (task.status === 'error') {
                     const msg = task.message || '下载失败';
@@ -672,7 +674,46 @@
                 });
             }
 
-            /** 浏览器保存：先后台落盘，再拉取本地文件 */
+            function triggerBlobDownload(blob, filename) {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            }
+
+            function fetchDownloadBlob(musicId, quality, format) {
+                return new Promise(function(resolve, reject) {
+                    const xhr = new XMLHttpRequest();
+                    xhr.open('POST', '/Download', true);
+                    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                    xhr.responseType = 'blob';
+                    xhr.onload = function() {
+                        if (xhr.status === 200) {
+                            const encodedFilename = xhr.getResponseHeader('X-Download-Filename');
+                            const filename = encodedFilename ? decodeURIComponent(encodedFilename) : '';
+                            resolve({ blob: xhr.response, filename: filename });
+                        } else if (xhr.status === 404 && format === 'lyric') {
+                            resolve(null);
+                        } else {
+                            reject(new Error('浏览器保存失败'));
+                        }
+                    };
+                    xhr.onerror = function() {
+                        reject(new Error('浏览器保存失败'));
+                    };
+                    xhr.send(
+                        'id=' + encodeURIComponent(musicId) +
+                        '&quality=' + encodeURIComponent(quality) +
+                        '&format=' + encodeURIComponent(format || 'file')
+                    );
+                });
+            }
+
+            /** 浏览器保存：先后台落盘，再拉取音频与同名歌词 */
             function browserSaveDownload(musicId, quality, $status, onDone) {
                 setStatus($status, '<span class="dl-status-chip dl-status-muted">下载中...</span>', true);
                 startJobAndPoll([musicId], quality, function(job) {
@@ -688,35 +729,33 @@
                         return;
                     }
                     setStatus($status, '<span class="dl-status-chip dl-status-muted">正在推送到浏览器...</span>', true);
-                    const xhr = new XMLHttpRequest();
-                    xhr.open('POST', '/Download', true);
-                    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-                    xhr.responseType = 'blob';
-                    xhr.onload = function() {
-                        if (xhr.status === 200) {
-                            const encodedFilename = xhr.getResponseHeader('X-Download-Filename');
-                            const filename = encodedFilename ? decodeURIComponent(encodedFilename) : (task.filename || 'music.flac');
-                            const blob = xhr.response;
-                            const url = window.URL.createObjectURL(blob);
-                            const a = document.createElement('a');
-                            a.href = url;
-                            a.download = filename;
-                            document.body.appendChild(a);
-                            a.click();
-                            document.body.removeChild(a);
-                            window.URL.revokeObjectURL(url);
-                            setStatus($status, '<span class="dl-status-chip dl-status-ok">下载完成：' + escapeHtml(filename) + '</span>', true);
-                            if (onDone) onDone(true, filename);
-                        } else {
-                            setStatus($status, '<span class="dl-status-chip dl-status-err">文件已落盘，但浏览器保存失败</span>', true);
-                            if (onDone) onDone(false);
+                    return fetchDownloadBlob(musicId, quality, 'file').then(function(audio) {
+                        const audioName = audio.filename || task.filename || 'music.flac';
+                        triggerBlobDownload(audio.blob, audioName);
+                        const lyricHint = task.lyric_filename || '';
+                        return fetchDownloadBlob(musicId, quality, 'lyric').then(function(lyric) {
+                            return { audioName: audioName, lyric: lyric, lyricHint: lyricHint };
+                        });
+                    }).then(function(pack) {
+                        const lyricName = (pack.lyric && pack.lyric.filename)
+                            || pack.lyricHint
+                            || '';
+                        if (pack.lyric) {
+                            setTimeout(function() {
+                                triggerBlobDownload(
+                                    pack.lyric.blob,
+                                    lyricName || (pack.audioName.replace(/\.[^.]+$/, '') + '.lrc')
+                                );
+                            }, 400);
                         }
-                    };
-                    xhr.onerror = function() {
+                        let tip = '下载完成：' + pack.audioName;
+                        if (pack.lyric) tip += ' + ' + (lyricName || '歌词.lrc');
+                        setStatus($status, '<span class="dl-status-chip dl-status-ok">' + escapeHtml(tip) + '</span>', true);
+                        if (onDone) onDone(true, pack.audioName);
+                    }).catch(function() {
                         setStatus($status, '<span class="dl-status-chip dl-status-err">文件已落盘，但浏览器保存失败</span>', true);
                         if (onDone) onDone(false);
-                    };
-                    xhr.send(`id=${encodeURIComponent(musicId)}&quality=${encodeURIComponent(quality)}&format=file`);
+                    });
                 }).catch(function(err) {
                     setStatus($status, '<span class="dl-status-chip dl-status-err">' + escapeHtml(err.message || '下载失败') + '</span>', true);
                     if (onDone) onDone(false);
